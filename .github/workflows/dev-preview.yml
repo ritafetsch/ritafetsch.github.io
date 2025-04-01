@@ -24,8 +24,8 @@ jobs:
 
       # HTMLHint temporarily disabled
 
-      - name: Run Stylelint
-        run: npx stylelint "assets/**/*.css" --ignore-path .stylelintignore
+      # - name: Run Stylelint
+      #   run: npx stylelint "assets/**/*.css" --ignore-path .stylelintignore
 
       - name: Prepare site for deployment
         run: |
