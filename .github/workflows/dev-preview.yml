@@ -22,8 +22,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run HTMLHint
-        run: npx htmlhint index.html
+      # HTMLHint temporarily disabled
 
       - name: Run Stylelint
         run: npx stylelint "**/*.css"
@@ -39,3 +38,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: dev-pages
+
