@@ -1,0 +1,41 @@
+name: Dev Preview Pipeline
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  lint-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run HTMLHint
+        run: npx htmlhint index.html
+
+      - name: Run Stylelint
+        run: npx stylelint "**/*.css"
+
+      - name: Prepare site for deployment
+        run: |
+          mkdir public
+          cp -r index.html assets images media public/
+
+      - name: Deploy to GitHub Pages (dev-pages branch)
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: dev-pages
