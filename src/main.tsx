@@ -1,16 +1,17 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import PortfolioApp from './PortfolioApp'
-
-// Import theme provider if you implement a ThemeContext
-// import { ThemeProvider } from './contexts/ThemeContext'
+import AdminPage from './AdminPage'
+import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* Wrap with ThemeProvider if you implement theming */}
-    {/* <ThemeProvider> */}
-      <PortfolioApp />
-    {/* </ThemeProvider> */}
-  </React.StrictMode>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PortfolioApp />} />
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
+    </BrowserRouter>
+  </React.StrictMode>,
 )

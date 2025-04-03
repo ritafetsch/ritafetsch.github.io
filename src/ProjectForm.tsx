@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Card, CardContent } from './components/ui/card';
-import { Button } from './components/ui/button';
+import { Card, CardContent } from './components/ui/Card';
+import { Button } from './components/ui/Button';
 import { X, Plus, Save } from 'lucide-react';
-import { Project } from './data/projects';
+import { Project } from './data/ProjectData';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ProjectFormProps {
   project?: Project | null;
@@ -71,7 +72,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project = null, onSave, onCan
     
     // Prepare data for saving
     const projectData: Project = {
-      id: project?.id || 0, // This would be set by the parent component for new projects
+      id: project?.id || uuidv4(), // Use existing ID or generate a new UUID
       ...formData,
       tags,
       date: new Date().toISOString() // Update the date
@@ -269,7 +270,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project = null, onSave, onCan
 interface AdminProjectListProps {
   projects: Project[];
   onEdit: (project: Project) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void; // Changed to string for UUID
   onAdd: () => void;
 }
 

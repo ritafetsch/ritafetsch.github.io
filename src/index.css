@@ -3,50 +3,91 @@
 @tailwind utilities;
 
 /* Base styles */
-:root {
-  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    @apply bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold dark:text-white;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Custom classes */
+/* Custom components */
 @layer components {
-  .container-default {
-    @apply max-w-6xl mx-auto px-4 sm:px-6;
+  /* Project Card */
+  .project-card {
+    @apply h-full flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800;
   }
   
-  .section-padding {
-    @apply py-16 md:py-24;
+  .project-card-image {
+    @apply relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700;
   }
   
-  .hero-gradient {
-    @apply bg-gradient-to-br from-blue-400 to-purple-500 text-white;
+  .project-card-content {
+    @apply flex-grow p-5 flex flex-col dark:bg-gray-800;
   }
   
+  /* Project Tag */
   .project-tag {
-    @apply inline-block px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700;
+    @apply inline-block px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300;
   }
   
-  .input-field {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  /* Featured Tag */
+  .featured-tag {
+    @apply inline-block px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
+  }
+  
+  /* Hero Section */
+  .hero-gradient {
+    @apply bg-gradient-to-br from-blue-400 to-purple-500;
+  }
+  
+  /* Custom button variants */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-white hover:bg-neutral-800 transition dark:bg-white dark:text-black dark:hover:bg-gray-200;
+  }
+  
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-black border border-gray-300 hover:bg-gray-100 transition dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700;
+  }
+  
+  /* Form styles */
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white;
   }
 }
 
-/* Custom animations */
+/* Dark mode styles */
+.dark .prose {
+  @apply text-gray-300;
+}
+
+.dark .prose strong {
+  @apply text-white;
+}
+
+.dark .prose a {
+  @apply text-blue-400;
+}
+
+.dark .prose h1, 
+.dark .prose h2, 
+.dark .prose h3, 
+.dark .prose h4 {
+  @apply text-white;
+}
+
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-.animate-fade-in {
+.animate-fadeIn {
   animation: fadeIn 0.5s ease-in-out;
 }

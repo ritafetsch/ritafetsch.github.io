@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from "./components/ui/Card";
 import { Button } from "./components/ui/Button";
-import { ExternalLink, Mail,  ChevronRight, Filter, X } from 'lucide-react';
-import { Project, projects, projectCategories } from './data/ProjectData';
+import { ExternalLink, Mail, ChevronRight, Filter, X } from 'lucide-react';
+import { Project, projectCategories } from './data/ProjectData';
 import { GithubIcon, LinkedinIcon } from "lucide-react";
+import ProjectCard from './ProjectCard';
+import { ProjectProvider, useProjects } from './state/ProjectContext';
 
 // Navigation items type
 interface NavItem {
@@ -19,104 +21,6 @@ const navItems: NavItem[] = [
   { name: "Contact", href: "#contact" }
 ];
 
-// Project Card Component
-interface ProjectCardProps {
-  project: Project;
-  onClick: (id: number) => void;
-}
-
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-  
-  return (
-    
-    <motion.div
-      style={{ height: '100%' }}
-      whileHover={{ y: -5 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      layout
-    >
-      <div className="h-full">
-        <Card 
-          className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-lg cursor-pointer"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onClick={() => onClick(project.id)}
-        >
-      
-        <div className="relative h-48 overflow-hidden bg-gray-100">
-          {project.image ? (
-            <div className="absolute inset-0 bg-cover bg-center" style={{ 
-              backgroundImage: `url(${project.image})`,
-              filter: isHovered ? 'brightness(0.7)' : 'brightness(1)'
-            }} />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500" />
-          )}
-          
-          {isHovered && (
-            <div className="absolute inset-0 flex items-center justify-center gap-4">
-              {project.github && (
-                <a 
-                  href={project.github} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()} // Prevent card click
-                >
-                  <Button className="bg-black/80 hover:bg-black">
-                    <GithubIcon size={18} className="mr-2" /> 
-                    Github
-                  </Button>
-                </a>
-              )}
-              
-              {project.live && (
-                <a 
-                  href={project.live} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()} // Prevent card click
-                >
-                  <Button className="bg-black/80 hover:bg-black">
-                    <ExternalLink size={18} className="mr-2" /> 
-                    Demo
-                  </Button>
-                </a>
-              )}
-            </div>
-          )}
-        </div>
-        
-        <CardContent className="p-5 flex flex-col flex-grow">
-          <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-          <p className="text-gray-600 mb-3">{project.description}</p>
-          
-          <div className="mt-auto">
-            <div className="flex flex-wrap gap-2 mt-2">
-              {project.tags.slice(0, 3).map((tag, idx) => (
-                <span 
-                  key={idx} 
-                  className="inline-block px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700"
-                >
-                  {tag}
-                </span>
-              ))}
-              {project.tags.length > 3 && (
-                <span className="inline-block px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">
-                  +{project.tags.length - 3}
-                </span>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      </div>
-    </motion.div>
-  );
-};
-
 // Project Detail Component
 interface ProjectDetailProps {
   project: Project;
@@ -124,6 +28,8 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
+  const { projects } = useProjects();
+  
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-5xl mx-auto py-12 px-6">
@@ -238,24 +144,18 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
   );
 };
 
-// Main Portfolio App Component
-const PortfolioApp: React.FC = () => {
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>("All");
-  const [showFilters, setShowFilters] = useState<boolean>(false);
-  
-  const handleProjectClick = (id: number): void => {
-    setSelectedProjectId(id);
-    window.scrollTo(0, 0);
-  };
-  
-  const handleBackClick = (): void => {
-    setSelectedProjectId(null);
-  };
-  
-  const filteredProjects = activeCategory === "All" 
-    ? projects 
-    : projects.filter(project => project.category === activeCategory);
+// Main Portfolio Content Component
+const PortfolioContent: React.FC = () => {
+  const { 
+    projects, 
+    activeCategory, 
+    showFilters, 
+    selectedProjectId,
+    filteredProjects,
+    setActiveCategory, 
+    setShowFilters, 
+    selectProject 
+  } = useProjects();
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   
@@ -271,6 +171,7 @@ const PortfolioApp: React.FC = () => {
                 key={item.name} 
                 href={item.href} 
                 className="text-gray-600 hover:text-black transition-colors"
+                aria-label={`Navigate to ${item.name} section`}
               >
                 {item.name}
               </a>
@@ -280,7 +181,7 @@ const PortfolioApp: React.FC = () => {
       </nav>
       
       {selectedProject ? (
-        <ProjectDetail project={selectedProject} onBack={handleBackClick} />
+        <ProjectDetail project={selectedProject} onBack={() => selectProject(null)} />
       ) : (
         <>
           {/* Hero Section */}
@@ -298,12 +199,12 @@ const PortfolioApp: React.FC = () => {
                     Software Engineer based in London, passionate about building clean, impactful web applications.
                   </p>
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                    <a href="#projects">
+                    <a href="#projects" aria-label="View my work">
                       <Button className="flex items-center gap-2">
                         View My Work <ChevronRight size={16} />
                       </Button>
                     </a>
-                    <a href="#contact">
+                    <a href="#contact" aria-label="Get in touch">
                       <Button className="bg-white text-black border border-gray-300 hover:bg-gray-100">
                         Get In Touch
                       </Button>
@@ -343,6 +244,7 @@ const PortfolioApp: React.FC = () => {
                           ? "bg-black text-white"
                           : "bg-white text-black border border-gray-200 hover:bg-gray-100"
                       }`}
+                      aria-label={`Filter by ${category} category`}
                     >
                       {category}
                     </Button>
@@ -354,6 +256,7 @@ const PortfolioApp: React.FC = () => {
                   <Button
                     onClick={() => setShowFilters(!showFilters)}
                     className="flex items-center bg-white text-black border border-gray-300 hover:bg-gray-100"
+                    aria-label={showFilters ? "Hide filters" : "Show filters"}
                   >
                     <Filter size={16} className="mr-2" />
                     {showFilters ? "Hide Filters" : "Filter Projects"}
@@ -373,7 +276,7 @@ const PortfolioApp: React.FC = () => {
                     <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-medium">Filter by Category</h3>
-                        <button onClick={() => setShowFilters(false)}>
+                        <button onClick={() => setShowFilters(false)} aria-label="Close filters">
                           <X size={18} className="text-gray-500" />
                         </button>
                       </div>
@@ -390,6 +293,7 @@ const PortfolioApp: React.FC = () => {
                                 ? "bg-black text-white"
                                 : "bg-white text-black border border-gray-200 hover:bg-gray-100"
                             }`}
+                            aria-label={`Filter by ${category} category`}
                           >
                             {category}
                           </Button>
@@ -402,16 +306,14 @@ const PortfolioApp: React.FC = () => {
               </AnimatePresence>
               
               {/* Project Grid */}
-              <motion.div 
-                layout
-              >
+              <motion.div layout>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <AnimatePresence>
                   {filteredProjects.map(project => (
                     <ProjectCard 
                       key={project.id} 
                       project={project} 
-                      onClick={handleProjectClick}
+                      onClick={selectProject}
                     />
                   ))}
                 </AnimatePresence>
@@ -476,7 +378,7 @@ const PortfolioApp: React.FC = () => {
                     </div>
                     
                     <div className="flex items-start gap-4">
-                      <LinkedinIcon  className="mt-1 text-gray-600" size={20} />
+                      <LinkedinIcon className="mt-1 text-gray-600" size={20} />
                       <div>
                         <h3 className="font-medium">LinkedIn</h3>
                         <a href="https://linkedin.com/in/rita-fetsch" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
@@ -511,7 +413,7 @@ const PortfolioApp: React.FC = () => {
                   <GithubIcon className="text-gray-600 hover:text-black transition-colors" />
                 </a>
                 <a href="https://linkedin.com/in/rita-fetsch" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                  <LinkedinIcon  className="text-gray-600 hover:text-black transition-colors" />
+                  <LinkedinIcon className="text-gray-600 hover:text-black transition-colors" />
                 </a>
                 <a href="mailto:ritafetsch1@gmail.com" aria-label="Email">
                   <Mail className="text-gray-600 hover:text-black transition-colors" />
@@ -522,6 +424,15 @@ const PortfolioApp: React.FC = () => {
         </>
       )}
     </div>
+  );
+};
+
+// Main Portfolio App Component
+const PortfolioApp: React.FC = () => {
+  return (
+    <ProjectProvider>
+      <PortfolioContent />
+    </ProjectProvider>
   );
 };
 

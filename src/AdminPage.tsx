@@ -1,59 +1,98 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, FileText, Settings, Moon, Sun, Search } from 'lucide-react';
-// Inline UI components
-const Card = ({ children, className, ...props }) => (
-  <div className={`rounded-lg border bg-white text-black shadow-sm ${className || ''}`} {...props}>
-    {children}
-  </div>
-);
+import { Card, CardContent } from './components/ui/Card';
+import { Button } from './components/ui/Button';
+import { Modal } from './components/ui/Modal';
+import ProjectForm from './ProjectForm';
+import { Project, projects as initialProjects } from './data/ProjectData';
+import { v4 as uuidv4 } from 'uuid';
 
-const CardContent = ({ children, className, ...props }) => (
-  <div className={`p-6 ${className || ''}`} {...props}>
-    {children}
-  </div>
-);
+// Theme context
+interface ThemeContextType {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+}
 
-const Button = ({ children, className, ...props }) => (
-  <button
-    className={`inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-white hover:bg-neutral-800 transition ${className || ''}`}
-    {...props}
-  >
-    {children}
-  </button>
-);
+const ThemeContext = createContext<ThemeContextType>({
+  isDarkMode: false,
+  toggleDarkMode: () => {},
+});
 
-// Simple Modal component
-const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
-  if (!isOpen) return null;
+// Theme provider component
+export const ThemeProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) onClose();
+  // Check for user's preferred theme on mount
+  useEffect(() => {
+    try {
+      // Check local storage first
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        setIsDarkMode(savedTheme === 'dark');
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // Fall back to system preference
+        setIsDarkMode(true);
+      }
+    } catch (error) {
+      console.error('Error accessing theme preference:', error);
+    }
+  }, []);
+
+  // Update document when theme changes
+  useEffect(() => {
+    try {
+      if (isDarkMode) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+    } catch (error) {
+      console.error('Error setting theme:', error);
+    }
+  }, [isDarkMode]);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={handleBackdropClick}>
-      <div className="fixed inset-0 bg-black/50" />
-      <div className={`relative z-10 bg-white rounded-lg shadow-xl overflow-hidden max-w-${size === 'lg' ? '2xl' : 'lg'}`}>
-        {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b">
-            <h2 className="text-xl font-semibold">{title}</h2>
-            <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100">×</button>
-          </div>
-        )}
-        <div className="p-6">{children}</div>
-      </div>
-    </div>
+    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+      {children}
+    </ThemeContext.Provider>
   );
 };
-import ProjectForm from './ProjectForm';
-import { Project, projects as initialProjects } from './data/projects';
-import { createNewProject, filterProjectsBySearch } from './utils';
-// Since we haven't set up a proper ThemeContext yet, we'll use a simple mock
-// Replace this with actual implementation when ThemeContext is available
-const useTheme = () => ({ 
-  isDarkMode: false, 
-  toggleDarkMode: () => console.log('Toggle dark mode') 
+
+// Custom hook to use theme
+const useTheme = () => useContext(ThemeContext);
+
+// Helper for filtering projects
+const filterProjectsBySearch = (projects: Project[], searchTerm: string): Project[] => {
+  if (!searchTerm.trim()) return projects;
+  
+  const term = searchTerm.toLowerCase();
+  return projects.filter(project => 
+    project.title.toLowerCase().includes(term) || 
+    project.description.toLowerCase().includes(term) ||
+    project.tags.some(tag => tag.toLowerCase().includes(term))
+  );
+};
+
+// Helper for creating a new project
+const createNewProject = (): Project => ({
+  id: uuidv4(),
+  title: "New Project",
+  description: "Project description",
+  longDescription: "",
+  tags: ["Tag 1", "Tag 2"],
+  category: "Other",
+  image: "",
+  github: "",
+  live: "",
+  featured: false,
+  date: new Date().toISOString()
 });
 
 const AdminPage: React.FC = () => {
@@ -71,25 +110,36 @@ const AdminPage: React.FC = () => {
   
   // Load projects from localStorage on initial load
   useEffect(() => {
-    const savedProjects = localStorage.getItem('portfolio-projects');
-    if (savedProjects) {
-      try {
-        setProjects(JSON.parse(savedProjects));
-      } catch (error) {
-        console.error('Error loading projects:', error);
+    try {
+      const savedProjects = localStorage.getItem('portfolio-projects');
+      if (savedProjects) {
+        const parsed = JSON.parse(savedProjects);
+        if (Array.isArray(parsed)) {
+          setProjects(parsed);
+        } else {
+          console.error('Saved projects is not an array:', parsed);
+          localStorage.removeItem('portfolio-projects');
+        }
       }
+    } catch (error) {
+      console.error('Error loading projects from localStorage:', error);
+      localStorage.removeItem('portfolio-projects');
     }
   }, []);
   
   // Save projects to localStorage when they change
   useEffect(() => {
-    localStorage.setItem('portfolio-projects', JSON.stringify(projects));
+    try {
+      localStorage.setItem('portfolio-projects', JSON.stringify(projects));
+    } catch (error) {
+      console.error('Error saving projects to localStorage:', error);
+    }
   }, [projects]);
   
   // Handle adding a new project
   const handleAddProject = () => {
     // Create a new project with a unique ID
-    const newProject = createNewProject(projects.length + 1);
+    const newProject = createNewProject();
     setSelectedProject(newProject);
     setIsFormOpen(true);
   };
@@ -102,24 +152,34 @@ const AdminPage: React.FC = () => {
   
   // Handle saving a project (new or edited)
   const handleSaveProject = (project: Project) => {
-    if (project.id && projects.some(p => p.id === project.id)) {
-      // Update existing project
-      setProjects(prevProjects => 
-        prevProjects.map(p => p.id === project.id ? project : p)
-      );
-    } else {
-      // Add new project
-      setProjects(prevProjects => [...prevProjects, project]);
+    try {
+      if (project.id && projects.some(p => p.id === project.id)) {
+        // Update existing project
+        setProjects(prevProjects => 
+          prevProjects.map(p => p.id === project.id ? project : p)
+        );
+      } else {
+        // Add new project
+        setProjects(prevProjects => [...prevProjects, project]);
+      }
+      
+      setIsFormOpen(false);
+      setSelectedProject(null);
+    } catch (error) {
+      console.error('Error saving project:', error);
+      alert('There was an error saving your project. Please try again.');
     }
-    
-    setIsFormOpen(false);
-    setSelectedProject(null);
   };
   
   // Handle deleting a project
-  const handleDeleteProject = (id: number) => {
-    if (confirm('Are you sure you want to delete this project?')) {
-      setProjects(prevProjects => prevProjects.filter(p => p.id !== id));
+  const handleDeleteProject = (id: string) => {
+    try {
+      if (window.confirm('Are you sure you want to delete this project?')) {
+        setProjects(prevProjects => prevProjects.filter(p => p.id !== id));
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      alert('There was an error deleting your project. Please try again.');
     }
   };
   
@@ -282,7 +342,6 @@ const AdminPage: React.FC = () => {
           setSelectedProject(null);
         }}
         title={selectedProject?.id ? "Edit Project" : "Add New Project"}
-        size="lg"
       >
         <ProjectForm
           project={selectedProject}

@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, X } from 'lucide-react';
 import { Button } from './components/ui/Button';
 import ProjectCard from './ProjectCard';
-import { Project, projectCategories } from './data/ProjectData';
+import { projectCategories } from './data/ProjectData';
+import { useProjects } from './state/ProjectContext';
 
 interface ProjectListProps {
-  projects: Project[];
-  onProjectClick?: (projectId: number) => void;
   showFilters?: boolean;
   showFeaturedOnly?: boolean;
   maxProjects?: number;
@@ -16,27 +15,34 @@ interface ProjectListProps {
 }
 
 const ProjectList: React.FC<ProjectListProps> = ({
-  projects,
-  onProjectClick,
   showFilters = true,
   showFeaturedOnly = false,
   maxProjects,
   title = "Projects",
   description,
 }) => {
-  const [activeCategory, setActiveCategory] = useState<string>("All");
-  const [showMobileFilters, setShowMobileFilters] = useState<boolean>(false);
+  const { 
+    projects, 
+    activeCategory, 
+    showFilters: showMobileFilters, 
+    setActiveCategory, 
+    setShowFilters, 
+    selectProject 
+  } = useProjects();
   
-  let filteredProjects = projects;
+  let filteredProjects = [...projects];
   
+  // Apply featured filter if needed
   if (showFeaturedOnly) {
     filteredProjects = filteredProjects.filter(project => project.featured);
   }
   
+  // Apply category filter
   if (activeCategory !== "All") {
     filteredProjects = filteredProjects.filter(project => project.category === activeCategory);
   }
   
+  // Apply max limit if needed
   if (maxProjects) {
     filteredProjects = filteredProjects.slice(0, maxProjects);
   }
@@ -57,7 +63,11 @@ const ProjectList: React.FC<ProjectListProps> = ({
               <Button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                variant={activeCategory === category ? "default" : "outline"}
+                className={`px-4 py-1 rounded-full ${
+                  activeCategory === category
+                    ? "bg-black text-white"
+                    : "bg-white text-black border border-gray-200 hover:bg-gray-100"
+                }`}
               >
                 {category}
               </Button>
@@ -66,8 +76,8 @@ const ProjectList: React.FC<ProjectListProps> = ({
           
           <div className="md:hidden">
             <Button
-              onClick={() => setShowMobileFilters(!showMobileFilters)}
-              variant="outline"
+              onClick={() => setShowFilters(!showMobileFilters)}
+              className="flex items-center bg-white text-black border border-gray-300 hover:bg-gray-100"
             >
               <Filter size={16} className="mr-2" />
               {showMobileFilters ? "Hide Filters" : "Filter Projects"}
@@ -92,7 +102,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
               <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-medium">Filter by Category</h3>
-                  <button onClick={() => setShowMobileFilters(false)}>
+                  <button onClick={() => setShowFilters(false)}>
                     <X size={18} className="text-gray-500" />
                   </button>
                 </div>
@@ -102,9 +112,13 @@ const ProjectList: React.FC<ProjectListProps> = ({
                       key={category}
                       onClick={() => {
                         setActiveCategory(category);
-                        setShowMobileFilters(false);
+                        setShowFilters(false);
                       }}
-                      variant={activeCategory === category ? "default" : "outline"}
+                      className={`px-4 py-1 rounded-full ${
+                        activeCategory === category
+                          ? "bg-black text-white"
+                          : "bg-white text-black border border-gray-200 hover:bg-gray-100"
+                      }`}
                     >
                       {category}
                     </Button>
@@ -123,7 +137,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
               <ProjectCard 
                 key={project.id} 
                 project={project} 
-                onClick={onProjectClick}
+                onClick={selectProject}
               />
             ))}
           </AnimatePresence>

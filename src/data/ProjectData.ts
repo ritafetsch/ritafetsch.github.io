@@ -1,7 +1,8 @@
-// src/data/projects.ts
+// src/data/ProjectData.ts
+import { v4 as uuidv4 } from 'uuid';
 
 export interface Project {
-    id: number;
+    id: string;
     title: string;
     description: string;
     longDescription?: string;
@@ -16,7 +17,7 @@ export interface Project {
   
   export const projects: Project[] = [
     {
-      id: 1,
+      id: uuidv4(),
       title: "Finflo",
       description: "Collaborative Financial Management Web Application",
       longDescription: "A comprehensive financial management solution that allows teams to collaboratively manage budgets, track expenses, and generate reports.",
@@ -28,7 +29,7 @@ export interface Project {
       featured: true
     },
     {
-      id: 2,
+      id: uuidv4(),
       title: "Advisorbot",
       description: "Cryptocurrency Exchange Simulation",
       longDescription: "A command-line application that simulates cryptocurrency exchange operations with real-time data analysis and trading suggestions.",
@@ -40,7 +41,7 @@ export interface Project {
       featured: true
     },
     {
-      id: 3,
+      id: uuidv4(),
       title: "BioScience API",
       description: "RESTful Bioscience Protein Research Web Service API",
       longDescription: "A RESTful API designed for bioscientists to access and manipulate protein research data with comprehensive documentation.",
@@ -52,7 +53,7 @@ export interface Project {
       featured: false
     },
     {
-      id: 4,
+      id: uuidv4(),
       title: "Calculator",
       description: "Native Mobile Application",
       longDescription: "A cross-platform mobile calculator application with advanced scientific functions and customizable themes.",
@@ -64,7 +65,7 @@ export interface Project {
       featured: false
     },
     {
-      id: 5,
+      id: uuidv4(),
       title: "Angry Birds",
       description: "Interactive game clone with physics simulation",
       longDescription: "A web-based clone of the popular Angry Birds game featuring accurate physics simulations and interactive gameplay.",
@@ -76,7 +77,7 @@ export interface Project {
       featured: true
     },
     {
-      id: 6,
+      id: uuidv4(),
       title: "Instagram Image Filters",
       description: "Web-based image processing application",
       longDescription: "A web application that applies various Instagram-like filters to images using canvas and image processing techniques.",
@@ -88,7 +89,7 @@ export interface Project {
       featured: false
     },
     {
-      id: 7,
+      id: uuidv4(),
       title: "Text Categorisation Model",
       description: "Deep Learning Workflow",
       longDescription: "A machine learning model that categorizes text documents using natural language processing and deep learning techniques.",

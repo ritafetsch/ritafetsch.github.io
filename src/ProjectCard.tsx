@@ -1,32 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Github, ExternalLink } from 'lucide-react';
-// Inline UI components
-const Card = ({ children, className, ...props }) => (
-  <div className={`rounded-lg border bg-white text-black shadow-sm ${className || ''}`} {...props}>
-    {children}
-  </div>
-);
-
-const CardContent = ({ children, className, ...props }) => (
-  <div className={`p-6 ${className || ''}`} {...props}>
-    {children}
-  </div>
-);
-
-const Button = ({ children, className, ...props }) => (
-  <button
-    className={`inline-flex items-center justify-center rounded-md bg-black px-4 py-2 text-white hover:bg-neutral-800 transition ${className || ''}`}
-    {...props}
-  >
-    {children}
-  </button>
-);
-import { Project } from './data/projects';
+import { GithubIcon, ExternalLink } from 'lucide-react';
+import { Button } from './components/ui/Button';
+import { Card, CardContent } from './components/ui/Card';
+import { Project } from './data/ProjectData'; // Updated import path
 
 interface ProjectCardProps {
   project: Project;
-  onClick?: (id: number) => void;
+  onClick?: (id: string) => void; // Updated to string for UUID
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
@@ -34,7 +15,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
   
   return (
     <motion.div
-      className="h-full"
+      style={{ height: '100%' }}
       whileHover={{ y: -5 }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -67,7 +48,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
                   onClick={(e) => e.stopPropagation()} // Prevent card click
                 >
                   <Button className="bg-black/80 hover:bg-black">
-                    <Github size={18} className="mr-2" /> 
+                    <GithubIcon size={18} className="mr-2" /> 
                     Github
                   </Button>
                 </a>
