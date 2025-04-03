@@ -59,18 +59,24 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
               ))}
             </div>
             <div className="flex gap-4 mb-8">
-              {project.github && (
-                <a href={project.github} target="_blank" rel="noopener noreferrer">
-                  <Button className="flex items-center">
-                    <GithubIcon size={18} className="mr-2" /> 
-                    View on GitHub
-                  </Button>
-                </a>
-              )}
+            {project.github && (
+              <a href={project.github} target="_blank" rel="noopener noreferrer">
+                <Button 
+                  variant="outline" 
+                  className="flex items-center"
+                >
+                  <GithubIcon size={18} className="mr-2" /> 
+                  View on GitHub
+                </Button>
+              </a>
+            )}
               
               {project.live && (
                 <a href={project.live} target="_blank" rel="noopener noreferrer">
-                  <Button className="flex items-center bg-white text-black border border-gray-300 hover:bg-gray-100">
+                  <Button 
+                    variant="outline"
+                    className="flex items-center"
+                  >
                     <ExternalLink size={18} className="mr-2" /> 
                     Live Demo
                   </Button>
@@ -129,6 +135,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
                     <h3 className="font-medium mb-1">{relatedProject.title}</h3>
                     <p className="text-sm text-gray-600 mb-3">{relatedProject.description}</p>
                     <Button 
+                      variant="default"
                       className="w-full"
                       onClick={() => onBack()}
                     >
@@ -199,17 +206,22 @@ const PortfolioContent: React.FC = () => {
                     Software Engineer based in London, passionate about building clean, impactful web applications.
                   </p>
                   <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                    <a href="#projects" aria-label="View my work">
-                      <Button className="flex items-center gap-2">
-                        View My Work <ChevronRight size={16} />
-                      </Button>
-                    </a>
-                    <a href="#contact" aria-label="Get in touch">
-                      <Button className="bg-white text-black border border-gray-300 hover:bg-gray-100">
-                        Get In Touch
-                      </Button>
-                    </a>
-                  </div>
+                  <a href="#projects" aria-label="View my work">
+                    <Button 
+                      variant="default" 
+                      className="flex items-center gap-2"
+                    >
+                      View My Work <ChevronRight size={16} />
+                    </Button>
+                  </a>
+                  <a href="#contact" aria-label="Get in touch">
+                    <Button 
+                      variant="outline"
+                    >
+                      Get In Touch
+                    </Button>
+                  </a>
+                </div>
                 </div>
                 <div className="hidden md:block md:w-1/3">
                   <div className="aspect-square bg-gray-100 rounded-full overflow-hidden">
@@ -234,22 +246,18 @@ const PortfolioContent: React.FC = () => {
               
               {/* Category Filters */}
               <div className="mb-8 flex justify-center md:justify-between items-center flex-wrap gap-4">
-                <div className="hidden md:flex flex-wrap gap-2">
-                  {projectCategories.map(category => (
-                    <Button
-                      key={category}
-                      onClick={() => setActiveCategory(category)}
-                      className={`px-4 py-1 rounded-full ${
-                        activeCategory === category
-                          ? "bg-black text-white"
-                          : "bg-white text-black border border-gray-200 hover:bg-gray-100"
-                      }`}
-                      aria-label={`Filter by ${category} category`}
-                    >
-                      {category}
-                    </Button>
-                  ))}
-                </div>
+              <div className="hidden md:flex flex-wrap gap-2">
+                {projectCategories.map(category => (
+                  <Button
+                    key={category}
+                    variant={activeCategory === category ? "default" : "outline"}
+                    onClick={() => setActiveCategory(category)}
+                    aria-label={`Filter by ${category} category`}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
                 
                 {/* Mobile Filter Button */}
                 <div className="md:hidden">

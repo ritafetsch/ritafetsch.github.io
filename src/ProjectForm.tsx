@@ -60,6 +60,22 @@ const ProjectForm: React.FC<ProjectFormProps> = ({ project = null, onSave, onCan
     });
   };
 
+  const validateForm = () => {
+    const errors: { [key: string]: string } = {};
+    
+    if (!formData.title.trim()) {
+      errors.title = "Title is required";
+    }
+    
+    if (formData.tags.split(',').length > 10) {
+      errors.tags = "Maximum 10 tags allowed";
+    }
+    
+    // Add more specific validations
+    
+    return errors;
+  };
+
   // Handle form submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

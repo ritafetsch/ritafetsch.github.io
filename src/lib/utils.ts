@@ -4,7 +4,11 @@
  * Combines class names with proper handling of conditional classes
  */
 export function cn(...classes: (string | boolean | undefined | null)[]): string {
-  return classes.filter(Boolean).join(' ');
+  return classes
+    .filter(Boolean)
+    .map(cls => typeof cls === 'string' ? cls : '')
+    .join(' ')
+    .trim();
 }
 
 /**
