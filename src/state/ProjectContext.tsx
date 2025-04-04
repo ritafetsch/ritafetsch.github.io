@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { projects as initialProjects } from '../data/ProjectData';
 import { Project } from '../types/project';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface ProjectContextType {
   projects: Project[];
@@ -21,12 +22,29 @@ interface ProjectContextType {
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export const ProjectProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
   // Use localStorage to persist project data
   const [savedProjects, setSavedProjects] = useLocalStorage<Project[]>('portfolio-projects', initialProjects);
   const [projects, setProjects] = useState<Project[]>(savedProjects);
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+
+  // Check for project ID in URL on initial load and URL changes
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const projectId = searchParams.get('project');
+    
+    // If URL has a project ID, set it as selected
+    if (projectId && projects.some(p => p.id === projectId)) {
+      setSelectedProjectId(projectId);
+    } else if (!projectId && selectedProjectId) {
+      // If URL doesn't have a project ID but we have one selected, clear it
+      setSelectedProjectId(null);
+    }
+  }, [location.search, projects, selectedProjectId]);
 
   // Update localStorage when projects change
   useEffect(() => {
@@ -38,10 +56,19 @@ export const ProjectProvider: React.FC<{children: React.ReactNode}> = ({ childre
     ? projects 
     : projects.filter(project => project.category === activeCategory);
 
-  // Function to select a project and scroll to top
+  // Function to select a project and update URL
   const selectProject = (id: string | null) => {
+    if (id) {
+      // Add project ID to URL
+      navigate(`?project=${id}`);
+      window.scrollTo(0, 0);
+    } else {
+      // Remove project ID from URL
+      navigate('/');
+    }
+    
+    // Also update the state
     setSelectedProjectId(id);
-    if (id) window.scrollTo(0, 0);
   };
 
   // Function to add a new project
