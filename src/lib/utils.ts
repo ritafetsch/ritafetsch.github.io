@@ -1,14 +1,8 @@
-// src/lib/utils.ts
-
 /**
  * Combines class names with proper handling of conditional classes
  */
 export function cn(...classes: (string | boolean | undefined | null)[]): string {
-  return classes
-    .filter(Boolean)
-    .map(cls => typeof cls === 'string' ? cls : '')
-    .join(' ')
-    .trim();
+  return classes.filter(Boolean).join(' ');
 }
 
 /**
@@ -22,17 +16,9 @@ export function formatDate(date: Date | string): string {
 }
 
 /**
- * Generates a unique ID for new projects
- */
-export function generateProjectId(projects: { id: number }[]): number {
-  const maxId = projects.reduce((max, project) => Math.max(max, project.id), 0);
-  return maxId + 1;
-}
-
-/**
  * Creates a new project object with default values
  */
-export function createNewProject(id: number) {
+export function createNewProject(id: string) {
   return {
     id,
     title: "New Project",

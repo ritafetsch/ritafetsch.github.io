@@ -1,84 +1,14 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, FileText, Settings, Moon, Sun, Search } from 'lucide-react';
-import { Card, CardContent } from './components/ui/Card';
-import { Button } from './components/ui/Button';
-import { Modal } from './components/ui/Modal';
-import ProjectForm from './ProjectForm';
-import { Project, projects as initialProjects } from './data/ProjectData';
+import { Card, CardContent } from '../../components/ui/Card';
+import { Button } from '../../components/ui/Button';
+import { Modal } from '../../components/ui/Modal';
+import ProjectForm from '../../components/project/ProjectForm';
+import { Project } from '../../types/project';
 import { v4 as uuidv4 } from 'uuid';
-
-// Theme context
-interface ThemeContextType {
-  isDarkMode: boolean;
-  toggleDarkMode: () => void;
-}
-
-const ThemeContext = createContext<ThemeContextType>({
-  isDarkMode: false,
-  toggleDarkMode: () => {},
-});
-
-// Theme provider component
-export const ThemeProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-
-  // Check for user's preferred theme on mount
-  useEffect(() => {
-    try {
-      // Check local storage first
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        setIsDarkMode(savedTheme === 'dark');
-      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        // Fall back to system preference
-        setIsDarkMode(true);
-      }
-    } catch (error) {
-      console.error('Error accessing theme preference:', error);
-    }
-  }, []);
-
-  // Update document when theme changes
-  useEffect(() => {
-    try {
-      if (isDarkMode) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
-    } catch (error) {
-      console.error('Error setting theme:', error);
-    }
-  }, [isDarkMode]);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
-  return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
-
-// Custom hook to use theme
-const useTheme = () => useContext(ThemeContext);
-
-// Helper for filtering projects
-const filterProjectsBySearch = (projects: Project[], searchTerm: string): Project[] => {
-  if (!searchTerm.trim()) return projects;
-  
-  const term = searchTerm.toLowerCase();
-  return projects.filter(project => 
-    project.title.toLowerCase().includes(term) || 
-    project.description.toLowerCase().includes(term) ||
-    project.tags.some(tag => tag.toLowerCase().includes(term))
-  );
-};
+import { useProjects } from '../../state/ProjectContext';
+import { useTheme } from '../../state/ThemeContext';
 
 // Helper for creating a new project
 const createNewProject = (): Project => ({
@@ -96,49 +26,26 @@ const createNewProject = (): Project => ({
 });
 
 const AdminPage: React.FC = () => {
-  // State for projects
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  // Get projects from context
+  const { projects, addProject, updateProject, deleteProject } = useProjects();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   
   // Search functionality
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const filteredProjects = filterProjectsBySearch(projects, searchTerm);
+  const filteredProjects = !searchTerm.trim() 
+    ? projects 
+    : projects.filter(project => 
+        project.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
   
   // Theme toggle
   const { isDarkMode, toggleDarkMode } = useTheme();
   
-  // Load projects from localStorage on initial load
-  useEffect(() => {
-    try {
-      const savedProjects = localStorage.getItem('portfolio-projects');
-      if (savedProjects) {
-        const parsed = JSON.parse(savedProjects);
-        if (Array.isArray(parsed)) {
-          setProjects(parsed);
-        } else {
-          console.error('Saved projects is not an array:', parsed);
-          localStorage.removeItem('portfolio-projects');
-        }
-      }
-    } catch (error) {
-      console.error('Error loading projects from localStorage:', error);
-      localStorage.removeItem('portfolio-projects');
-    }
-  }, []);
-  
-  // Save projects to localStorage when they change
-  useEffect(() => {
-    try {
-      localStorage.setItem('portfolio-projects', JSON.stringify(projects));
-    } catch (error) {
-      console.error('Error saving projects to localStorage:', error);
-    }
-  }, [projects]);
-  
   // Handle adding a new project
   const handleAddProject = () => {
-    // Create a new project with a unique ID
     const newProject = createNewProject();
     setSelectedProject(newProject);
     setIsFormOpen(true);
@@ -155,12 +62,10 @@ const AdminPage: React.FC = () => {
     try {
       if (project.id && projects.some(p => p.id === project.id)) {
         // Update existing project
-        setProjects(prevProjects => 
-          prevProjects.map(p => p.id === project.id ? project : p)
-        );
+        updateProject(project);
       } else {
         // Add new project
-        setProjects(prevProjects => [...prevProjects, project]);
+        addProject(project);
       }
       
       setIsFormOpen(false);
@@ -175,7 +80,7 @@ const AdminPage: React.FC = () => {
   const handleDeleteProject = (id: string) => {
     try {
       if (window.confirm('Are you sure you want to delete this project?')) {
-        setProjects(prevProjects => prevProjects.filter(p => p.id !== id));
+        deleteProject(id);
       }
     } catch (error) {
       console.error('Error deleting project:', error);
@@ -184,27 +89,27 @@ const AdminPage: React.FC = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-bold">Portfolio Admin</h1>
+            <h1 className="text-xl font-bold dark:text-white">Portfolio Admin</h1>
             
             <div className="flex items-center space-x-4">
               <button
                 onClick={toggleDarkMode}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 aria-label="Toggle dark mode"
               >
-                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+                {isDarkMode ? <Sun size={20} className="text-white" /> : <Moon size={20} />}
               </button>
               
               <button
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 aria-label="Settings"
               >
-                <Settings size={20} />
+                <Settings size={20} className="dark:text-white" />
               </button>
             </div>
           </div>
@@ -215,7 +120,7 @@ const AdminPage: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Action bar */}
         <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
-          <h2 className="text-2xl font-bold">Manage Projects</h2>
+          <h2 className="text-2xl font-bold dark:text-white">Manage Projects</h2>
           
           <div className="flex gap-4 w-full sm:w-auto">
             <div className="relative w-full sm:w-64">
@@ -224,7 +129,7 @@ const AdminPage: React.FC = () => {
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               />
               <Search size={18} className="absolute left-3 top-2.5 text-gray-400" />
             </div>
@@ -245,7 +150,7 @@ const AdminPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="h-full flex flex-col hover:shadow-md transition-shadow cursor-pointer">
+              <Card className="h-full flex flex-col hover:shadow-md transition-shadow cursor-pointer dark:bg-gray-800">
                 <div className="h-40 bg-gray-100 dark:bg-gray-700 relative">
                   {project.image ? (
                     <img
@@ -268,20 +173,20 @@ const AdminPage: React.FC = () => {
                 </div>
                 
                 <CardContent className="flex-grow flex flex-col p-4">
-                  <h3 className="font-semibold text-lg mb-1">{project.title}</h3>
+                  <h3 className="font-semibold text-lg mb-1 dark:text-white">{project.title}</h3>
                   <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">{project.description}</p>
                   
                   <div className="flex flex-wrap gap-1 mb-4">
                     {project.tags.slice(0, 3).map((tag, idx) => (
                       <span
                         key={idx}
-                        className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full"
+                        className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full dark:text-gray-300"
                       >
                         {tag}
                       </span>
                     ))}
                     {project.tags.length > 3 && (
-                      <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full">
+                      <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full dark:text-gray-300">
                         +{project.tags.length - 3}
                       </span>
                     )}
@@ -297,7 +202,7 @@ const AdminPage: React.FC = () => {
                     <Button
                       onClick={() => handleDeleteProject(project.id)}
                       variant="outline"
-                      className="bg-white text-red-600 border border-red-200 hover:bg-red-50"
+                      className="bg-white text-red-600 border border-red-200 hover:bg-red-50 dark:bg-gray-700 dark:border-red-800 dark:text-red-400 dark:hover:bg-gray-600"
                     >
                       Delete
                     </Button>
@@ -308,7 +213,7 @@ const AdminPage: React.FC = () => {
           ))}
           
           {filteredProjects.length === 0 && (
-            <div className="col-span-full py-12 text-center text-gray-500">
+            <div className="col-span-full py-12 text-center text-gray-500 dark:text-gray-400">
               {searchTerm ? (
                 <>
                   <p>No projects match your search "{searchTerm}"</p>

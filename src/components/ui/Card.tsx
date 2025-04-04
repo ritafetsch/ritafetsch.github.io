@@ -7,7 +7,7 @@ export const Card: React.FC<CardProps> = ({ className, ...props }) => {
   return (
     <div 
       className={cn(
-        "rounded-lg border border-gray-200 bg-white text-black shadow-sm", 
+        "rounded-lg border border-gray-200 bg-white text-black shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white", 
         className
       )} 
       {...props} 
@@ -53,7 +53,7 @@ interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement
 export const CardDescription: React.FC<CardDescriptionProps> = ({ className, ...props }) => {
   return (
     <p 
-      className={cn("text-sm text-gray-500", className)} 
+      className={cn("text-sm text-gray-500 dark:text-gray-400", className)} 
       {...props} 
     />
   );
