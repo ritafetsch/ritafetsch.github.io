@@ -4,7 +4,7 @@ import { Filter, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import ProjectCard from './ProjectCard';
 import { useProjects } from '../../state/ProjectContext';
-
+import { useTheme } from '../../state/ThemeContext'; 
 interface ProjectListProps {
   showFilters?: boolean;
   showFeaturedOnly?: boolean;
@@ -20,6 +20,8 @@ const ProjectList: React.FC<ProjectListProps> = ({
   title = "Projects",
   description,
 }) => {
+  const { isDarkMode } = useTheme(); // Add this line
+  console.log('Is Dark Mode:', isDarkMode); // And this line
   const { 
     projects, 
     activeCategory, 
@@ -56,22 +58,18 @@ const ProjectList: React.FC<ProjectListProps> = ({
       
       {showFilters && (
         <div className="mb-8 flex justify-center md:justify-between items-center flex-wrap gap-4">
-          <div className="hidden md:flex flex-wrap gap-2">
+         <div className="flex flex-wrap gap-2">
             {categories.map(category => (
               <Button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`px-4 py-1 rounded-full ${
-                  activeCategory === category
-                    ? "bg-black text-white dark:bg-white dark:text-black"
-                    : "bg-white text-black border border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700"
-                }`}
+                variant={activeCategory === category ? 'default' : 'outline'}
               >
                 {category}
               </Button>
             ))}
           </div>
-          
+                    
           <div className="md:hidden">
             <Button
               onClick={() => setShowFilters(!showMobileFilters)}
@@ -108,15 +106,8 @@ const ProjectList: React.FC<ProjectListProps> = ({
                 {categories.map(category => (
                   <Button
                     key={category}
-                    onClick={() => {
-                      setActiveCategory(category);
-                      setShowFilters(false);
-                    }}
-                    className={`px-4 py-1 rounded-full ${
-                      activeCategory === category
-                        ? "bg-black text-white dark:bg-white dark:text-black"
-                        : "bg-white text-black border border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:hover:bg-gray-700"
-                    }`}
+                    onClick={() => setActiveCategory(category)}
+                    variant={activeCategory === category ? 'default' : 'outline'}
                   >
                     {category}
                   </Button>

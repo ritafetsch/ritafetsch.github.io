@@ -32,20 +32,34 @@ const HeroSection: React.FC = () => {
               </div>
             </div>
             <div className="hidden md:block md:w-1/3">
-              <div className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                {/* Profile Image */}
-                <img 
-                  src="/images/profile_pic/rita.jpg" 
-                  alt="Rita Fetsch"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.onerror = null; // Prevent infinite loop
-                    // Fallback to gradient if image fails to load
-                    target.style.display = 'none';
-                    target.parentElement!.classList.add('bg-gradient-to-br', 'from-blue-400', 'to-purple-500');
+              <div className="mx-auto flex items-center justify-center">
+                <div
+                  style={{
+                    width: "288px",
+                    height: "288px",
+                    position: "relative",
+                    backgroundColor: "#f3f4f6",
+                    borderRadius: "50%",
+                    overflow: "hidden"
                   }}
-                />
+                >
+                  <img
+                    src="/images/profile_pic/rita.jpg"
+                    alt="Rita Fetsch"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: "center 15%", 
+                    }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      target.style.display = 'none';
+                      target.parentElement!.style.background = 'linear-gradient(to bottom right, #60a5fa, #8b5cf6)';
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
