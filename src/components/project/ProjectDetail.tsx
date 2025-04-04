@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, ExternalLink, GithubIcon } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -12,8 +11,8 @@ interface ProjectDetailProps {
   onBack: () => void;
 }
 
-const ProjectDetail: React.FC<ProjectDetailProps> = ({ project, onBack }) => {
-  const { projects, selectProject } = useProjects();
+const ProjectDetail: React.FC<ProjectDetailProps> = ({ project }) => {
+  const { projects } = useProjects();
   const navigate = useNavigate();
   
   // Get related projects (excluding current project)
