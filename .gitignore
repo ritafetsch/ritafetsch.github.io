@@ -1,0 +1,8 @@
+node_modules/
+.vscode/
+.env
+.DS_Store
+package-lock.json
+package.json
+public/
+OLD_STUFF
