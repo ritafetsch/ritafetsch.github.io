@@ -11,8 +11,8 @@ export const projects: Project[] = [
     category: "Full Stack",
     image: "/images/project_cover/finflo.png",
     github: "https://github.com/ritafetsch/finflo.git",
-    live: "https://github.com/ritafetsch/finflo.git",
-    featured: true
+    live: "",
+    featured: false
   },
   {
     id: uuidv4(),
@@ -24,7 +24,7 @@ export const projects: Project[] = [
     image: "/images/project_cover/advisorbot.png",
     github: "https://github.com/ritafetsch/advisorbot.git",
     live: "",
-    featured: true
+    featured: false
   },
   {
     id: uuidv4(),
@@ -36,7 +36,7 @@ export const projects: Project[] = [
     image: "/images/project_cover/bioScience.png",
     github: "https://github.com/ritafetsch/bioData.git",
     live: "",
-    featured: true
+    featured: false
   },
   {
     id: uuidv4(),
@@ -47,8 +47,8 @@ export const projects: Project[] = [
     category: "Mobile",
     image: "/images/project_cover/bujjit.png",
     github: "https://github.com/cozie11/bujjit.git",
-    live: "https://expo.dev/accounts/mariamjo/projects/bujjit/updates",
-    featured: true
+    live: "",
+    featured: false
   },
   {
     id: uuidv4(),
@@ -72,7 +72,7 @@ export const projects: Project[] = [
     image: "/images/project_cover/angry-birds.png",
     github: "https://github.com/ritafetsch/angry-birds",
     live: "https://ritafetsch.github.io/angry-birds/",
-    featured: true
+    featured: false
   },
   {
     id: uuidv4(),
@@ -94,20 +94,8 @@ export const projects: Project[] = [
     tags: ["JavaScript", "p5.js", "Game Development", "Physics Simulation", "Procedural Generation"],
     category: "Game",
     image: "/images/project_cover/asteroids.png",
-    github: "",
-    live: "",
-    featured: false
-  },
-  {
-    id: uuidv4(),
-    title: "Text Categorisation Model",
-    description: "Deep Learning Workflow",
-    longDescription: "A machine learning model that categorizes text documents using natural language processing and deep learning techniques.",
-    tags: ["Python", "Machine Learning", "NLP", "Deep Learning"],
-    category: "Data Science",
-    image: "/images/project_cover/text-categorisation.png",
-    github: "",
-    live: "https://drive.google.com/file/d/15agUp04RxprAFERjD7uE3ZQ0I90oqQ_3/view?usp=drive_link",
+    github: "https://github.com/ritafetsch/asteroid-game",
+    live: "https://ritafetsch.github.io/asteroid-game/",
     featured: false
   },
   {
@@ -118,8 +106,8 @@ export const projects: Project[] = [
     tags: ["JavaScript", "p5.js", "Image Processing", "Data Visualization", "Computational Photography"],
     category: "Web App",
     image: "/images/project_cover/image-average.png",
-    github: "",
-    live: "",
+    github: "https://github.com/ritafetsch/average-face",
+    live: "https://ritafetsch.github.io/average-face/",
     featured: false
   }
 ];
