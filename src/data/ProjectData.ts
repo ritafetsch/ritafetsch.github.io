@@ -11,7 +11,7 @@ export const projects: Project[] = [
     category: "Full Stack",
     image: "/images/project_cover/finflo.png",
     github: "https://github.com/ritafetsch/finflo.git",
-    live: "",
+    live: "https://finflo.onrender.com/",
     featured: false
   },
   {
