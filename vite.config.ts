@@ -3,8 +3,10 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
+  base: process.env.NODE_ENV === 'production' 
+    ? '/ritafetsch.github.io/' 
+    : '/',
   plugins: [react()],
-  base: '/ritafetsch.github.io/', // Important: add your repo name with a trailing slash
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
