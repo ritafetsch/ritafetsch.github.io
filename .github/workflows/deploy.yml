@@ -11,34 +11,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/checkout@v4  # Updated to latest version
+      - name: Use Node.js
+        uses: actions/setup-node@v4  # Updated to latest version
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
       - name: Install dependencies
-        run: npm install
+        run: npm ci  # Recommended for CI environments
       - name: Build
         run: npm run build
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3  # Explicitly specify version
         with:
-          name: github-pages
-          path: ./dist
-          retention-days: 1
+          path: dist
 
   deploy:
     needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: github-pages
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
