@@ -1,10 +1,22 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Project } from '../types/project';
 
-// Add a version number to the data 
-export const DATA_VERSION = "1.0.4"; // Increment whenever data is updated
+// Add version number to the data 
+export const DATA_VERSION = "1.0.5"; 
 
 export const projects: Project[] = [
+  {
+    id: uuidv4(),
+    title: "Personal Portfolio Website",
+    description: "Responsive React-based Portfolio Showcasing Software Engineering Projects",
+    longDescription: "A modern, responsive single-page application designed to showcase professional projects and personal achievements. Features include dynamic project filtering, dark mode toggle, interactive project details, and seamless routing. Implements advanced React state management, responsive design with Tailwind CSS, and GitHub Pages deployment. The site demonstrates comprehensive front-end development techniques including context-based state management, local storage persistence, and smooth user interactions.",
+    tags: ["React", "TypeScript", "Tailwind CSS", "Framer Motion", "React Router", "GitHub Pages", "Responsive Design", "Context API", "Vite"],
+    category: "Web App",
+    image: "/images/project_cover/portfolio.png",
+    github: "https://github.com/ritafetsch/ritafetsch.github.io",
+    live: "https://ritafetsch.github.io/portfolio/",
+    featured: true
+  },
   {
     id: uuidv4(),
     title: "Finflo",
@@ -15,7 +27,7 @@ export const projects: Project[] = [
     image: "/images/project_cover/finflo.png",
     github: "https://github.com/ritafetsch/finflo.git",
     live: "https://finflo.onrender.com/",
-    featured: false
+    featured: true
   },
   {
     id: uuidv4(),
