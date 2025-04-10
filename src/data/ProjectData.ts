@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Project } from '../types/project';
 
+// Add a version number to the data 
+export const DATA_VERSION = "1.0.2"; // Increment whenever data is updated
+
 export const projects: Project[] = [
   {
     id: uuidv4(),
