@@ -3,9 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' 
-    ? '/ritafetsch.github.io/' 
-    : '/',
+  base: '/',
   plugins: [react()],
   resolve: {
     alias: {

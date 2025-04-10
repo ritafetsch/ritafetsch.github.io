@@ -11,18 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4  # Updated to latest version
+        uses: actions/checkout@v4
       - name: Use Node.js
-        uses: actions/setup-node@v4  # Updated to latest version
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
       - name: Install dependencies
-        run: npm ci  # Recommended for CI environments
+        run: npm ci
       - name: Build
         run: npm run build
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3  # Explicitly specify version
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
