@@ -1,6 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Project } from '../types/project';
 
+// Add a version number to the data 
+export const DATA_VERSION = "1.0.3"; // Increment whenever data is updated
+
 export const projects: Project[] = [
   {
     id: uuidv4(),
@@ -155,6 +158,18 @@ export const projects: Project[] = [
     category: "Machine Learning",
     image: "/images/project_cover/knn-implementation.png",
     github: "https://github.com/ritafetsch/k-nearest-neighbor-classification-red-wine/blob/master/Machine%20Learning%20Coursework%20(Part%201).ipynb",
+    live: "",
+    featured: false
+  },
+  {
+    id: uuidv4(),
+    title: "SMS Spam Detection System",
+    description: "NLP-Based Text Classification for Message Filtering",
+    longDescription: "A machine learning system designed to classify SMS messages as spam or legitimate using natural language processing techniques. Implements a Multinomial Naive Bayes classifier with TF-IDF vectorization to analyze message content. Features comprehensive text preprocessing including tokenization, stop word removal, and lemmatization. Achieves 95.34% accuracy with 100% precision on the test dataset, significantly outperforming the baseline. The project demonstrates practical application of NLP for cybersecurity, focusing on maximizing precision to prevent legitimate messages from being incorrectly filtered.",
+    tags: ["Python", "Natural Language Processing", "Machine Learning", "Text Classification", "NLTK", "Scikit-learn", "Data Preprocessing", "Naive Bayes", "Pandas"],
+    category: "Machine Learning",
+    image: "/images/project_cover/spam-detection.png",
+    github: "https://github.com/ritafetsch/spam-detection-system/blob/master/NLP%20Text%20Categorisation%20-%20Spam%20Detection%20System.ipynb",
     live: "",
     featured: false
   },

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { projects as initialProjects } from '../data/ProjectData';
+import { projects as initialProjects, DATA_VERSION } from '../data/ProjectData';
 import { Project } from '../types/project';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -25,9 +25,25 @@ export const ProjectProvider: React.FC<{children: React.ReactNode}> = ({ childre
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Use localStorage to persist project data
+
+
+  // Add version tracking
+  const [savedVersion, setSavedVersion] = useLocalStorage<string>('portfolio-data-version', '');
   const [savedProjects, setSavedProjects] = useLocalStorage<Project[]>('portfolio-projects', initialProjects);
-  const [projects, setProjects] = useState<Project[]>(savedProjects);
+  
+  // Use localStorage to persist project data
+  const [projects, setProjects] = useState<Project[]>(() => {
+    // If version doesn't match, use the initial data from code
+    if (!savedVersion || savedVersion !== DATA_VERSION) {
+      console.log('Data version mismatch, using updated project data');
+      setSavedVersion(DATA_VERSION);
+      setSavedProjects(initialProjects);
+      return initialProjects;
+    }
+    return savedProjects;
+  });
+
+
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
