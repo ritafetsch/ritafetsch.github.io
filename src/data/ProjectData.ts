@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Project } from '../types/project';
 
 // Add version number to the data 
-export const DATA_VERSION = "1.0.6"; 
+export const DATA_VERSION = "1.0.7"; 
 
 export const projects: Project[] = [
   {
