@@ -50,7 +50,7 @@ export const projects: Project[] = [
     category: "API",
     image: "/images/project_cover/bioScience.png",
     github: "https://github.com/ritafetsch/bioData.git",
-    live: "",
+    live: "https://biodata-production.up.railway.app/",
     featured: false
   },
   {
